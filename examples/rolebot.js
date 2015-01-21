@@ -170,7 +170,7 @@ slack.on('message', function(message) {
 			return;
 		}
 		var storypart = story[story.length-1];
-		say(who, "Latest part of the story was from "+storypart.author+", he added: \""+storypart.paragraph+"\"");
+		say(who, "Latest part of the story was from @"+storypart.author+", he added: \""+storypart.paragraph+"\"");
 	}
 
 	function fullStory(who){
