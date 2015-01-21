@@ -34,7 +34,7 @@ if (fs.existsSync("story.json")) {
 
 slack.on('open', function() {
 
-	var channels = ["#foundrystories"],
+	var channels = ["#test-bot"],
 	    groups = [],
 	    unreads = slack.getUnreadCount(),
 	    key;
@@ -170,7 +170,7 @@ slack.on('message', function(message) {
 			return;
 		}
 		var storypart = story[story.length-1];
-		say(who, "Latest part of the story was from "+storypart.author+", he added: \""+storypart.story+"\"");
+		say(who, "Latest part of the story was from "+storypart.author+", he added: \""+storypart.paragraph+"\"");
 	}
 
 	function fullStory(who){
@@ -188,9 +188,9 @@ slack.on('message', function(message) {
 		for (var i = 0; i < story.length; i++){
 			var storypart = story[i];
 			if (!who){
-				share(storypart.story);
+				share('['+storypart.author+'] '+storypart.paragraph);
 			} else {
-				say(who, storypart.story);
+				share('['+storypart.author+'] '+storypart.paragraph);
 			}
 		}
 	}
@@ -201,21 +201,28 @@ slack.on('message', function(message) {
 
 	function addStoryPart(from, storyText){
 		var storypart = {
-			author: from,
-			story: storyText
+			author: from.name,
+			paragraph: storyText
 		};
 		story.push(storypart);	
 		saveStory();	
-		say(from, "Added.");
+		say(from.name, "Added.");
 	}
 
 	function saveStory(){
+		var cache = [];
 		var serializedStory = JSON.stringify(story);
+		//cache = null; // Enable garbage collection
+		// console.log(serializedStory);
 		console.log(serializedStory);
 		fs.writeFile('story.json', serializedStory, function (err) {
 	        if (err) throw err;
 	        console.log('It seems as if the file was saved, we shall see.');
 	    });
+		// fs.writeFile('story.json', serializedStory, function (err) {
+	 //        if (err) throw err;
+	 //        console.log('It seems as if the file was saved, we shall see.');
+	 //    });
 	}
 
 	function correctStoryPart(from, storyText){
@@ -227,7 +234,7 @@ slack.on('message', function(message) {
 		if (storypart.author === from){
 			storypart = {
 				author: from,
-				story: storyText
+				paragraph: storyText
 			};
 			story[story.length-1] = storypart;
 			saveStory();
